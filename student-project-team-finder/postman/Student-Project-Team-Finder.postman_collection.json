@@ -1,0 +1,34 @@
+{
+  "info": {
+    "name": "Student Project Team Finder API",
+    "description": "Development collection for the Spring Boot API. Sign in first; the login test saves the JWT automatically.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {"key":"baseUrl","value":"http://localhost:8080/api"},
+    {"key":"token","value":""},
+    {"key":"projectId","value":"1"},
+    {"key":"requestId","value":"1"}
+  ],
+  "item": [
+    {"name":"Authentication","item":[
+      {"name":"Register student","request":{"method":"POST","header":[{"key":"Content-Type","value":"application/json"}],"url":"{{baseUrl}}/auth/register","body":{"mode":"raw","raw":"{\n  \"fullName\": \"New Student\",\n  \"email\": \"new.student@campus.dev\",\n  \"password\": \"CampusPass!2026\",\n  \"branch\": \"Computer Science\",\n  \"academicYear\": 3,\n  \"role\": \"STUDENT\"\n}"}}},
+      {"name":"Login","event":[{"listen":"test","script":{"exec":["const json = pm.response.json();", "pm.collectionVariables.set('token', json.token);"]}}],"request":{"method":"POST","header":[{"key":"Content-Type","value":"application/json"}],"url":"{{baseUrl}}/auth/login","body":{"mode":"raw","raw":"{\n  \"email\": \"arjun@campus.dev\",\n  \"password\": \"CampusPass!2026\"\n}"}}}
+    ]},
+    {"name":"Profile and discovery","item":[
+      {"name":"My profile","request":{"method":"GET","header":[{"key":"Authorization","value":"Bearer {{token}}"}],"url":"{{baseUrl}}/students/me"}},
+      {"name":"Search students","request":{"method":"GET","header":[{"key":"Authorization","value":"Bearer {{token}}"}],"url":"{{baseUrl}}/students?skill=Java&availability=AVAILABLE"}},
+      {"name":"Browse open projects","request":{"method":"GET","header":[{"key":"Authorization","value":"Bearer {{token}}"}],"url":"{{baseUrl}}/projects?status=OPEN_FOR_MEMBERS"}}
+    ]},
+    {"name":"Projects and teams","item":[
+      {"name":"Create project","request":{"method":"POST","header":[{"key":"Authorization","value":"Bearer {{token}}"},{"key":"Content-Type","value":"application/json"}],"url":"{{baseUrl}}/projects","body":{"mode":"raw","raw":"{\n  \"title\": \"Accessibility Audit Toolkit\",\n  \"shortDescription\": \"A practical tool to help campus teams assess basic web accessibility.\",\n  \"description\": \"Build a simple guided audit workflow with an actionable report.\",\n  \"category\": \"Accessibility\",\n  \"teamSize\": 4,\n  \"status\": \"OPEN_FOR_MEMBERS\",\n  \"skills\": [\n    {\"name\":\"Java\",\"skillType\":\"REQUIRED\"},\n    {\"name\":\"React\",\"skillType\":\"PREFERRED\"}\n  ]\n}"}}},
+      {"name":"Candidate matches","request":{"method":"GET","header":[{"key":"Authorization","value":"Bearer {{token}}"}],"url":"{{baseUrl}}/projects/{{projectId}}/candidates"}},
+      {"name":"Send invitation","request":{"method":"POST","header":[{"key":"Authorization","value":"Bearer {{token}}"},{"key":"Content-Type","value":"application/json"}],"url":"{{baseUrl}}/projects/{{projectId}}/invitations","body":{"mode":"raw","raw":"{\"studentId\":2}"}}},
+      {"name":"Accept invitation","request":{"method":"POST","header":[{"key":"Authorization","value":"Bearer {{token}}"}],"url":"{{baseUrl}}/invitations/{{requestId}}/accept"}}
+    ]},
+    {"name":"Workspace and administration","item":[
+      {"name":"Create milestone","request":{"method":"POST","header":[{"key":"Authorization","value":"Bearer {{token}}"},{"key":"Content-Type","value":"application/json"}],"url":"{{baseUrl}}/projects/{{projectId}}/milestones","body":{"mode":"raw","raw":"{\"title\":\"Prototype walkthrough\",\"description\":\"Share a usable first flow.\",\"dueDate\":\"2026-11-10\",\"status\":\"IN_PROGRESS\",\"progressPercentage\":45}"}}},
+      {"name":"Admin stats (admin token required)","request":{"method":"GET","header":[{"key":"Authorization","value":"Bearer {{token}}"}],"url":"{{baseUrl}}/admin/stats"}}
+    ]}
+  ]
+}
